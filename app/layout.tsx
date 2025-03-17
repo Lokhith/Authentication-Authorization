@@ -27,10 +27,15 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={`${inter.className} min-h-screen flex flex-col`}>
         <ThemeProvider attribute="class" defaultTheme="system">
           <Navbar isLoggedIn={isLoggedIn} isAdmin={isAdmin} />
-          <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">{children}</main>
+          <main className="flex-1">{children}</main>
+          <footer className="py-6 border-t">
+            <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
+              <p>© {new Date().getFullYear()} Auth App. All rights reserved.</p>
+            </div>
+          </footer>
         </ThemeProvider>
       </body>
     </html>

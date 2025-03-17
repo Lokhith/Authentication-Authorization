@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { getCurrentUser, requireAuth } from "@/lib/auth"
 import { fromObjectId } from "@/lib/db"
 import { logout } from "@/app/actions/auth-actions"
-import { LogOut } from "lucide-react"
+import { LogOut, User, Calendar, Clock } from "lucide-react"
 
 export default async function UserHomePage() {
   // Server-side protection
@@ -12,23 +12,102 @@ export default async function UserHomePage() {
   const user = await getCurrentUser()
   const userId = user?._id ? (typeof user._id === "string" ? user._id : fromObjectId(user._id as any)) : ""
 
-  return (
-    <div className="container mx-auto py-10">
-      <h1 className="text-3xl font-bold mb-6">User Home</h1>
+  // Format current date
+  const currentDate = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })
 
-      <Card>
+  // Format current time
+  const currentTime = new Date().toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+  })
+
+  return (
+    <div className="dashboard-container">
+      <div className="page-header">
+        <h1 className="gradient-heading">User Dashboard</h1>
+        <p className="text-muted-foreground">Welcome to your personal dashboard</p>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <Card className="card-hover">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg">Profile</CardTitle>
+              <User className="h-5 w-5 text-primary" />
+            </div>
+            <CardDescription>Your account information</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Username:</span>
+                <span className="font-medium">{user?.username}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">User ID:</span>
+                <span className="font-medium truncate max-w-[180px]" title={userId}>
+                  {userId}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Role:</span>
+                <span className="font-medium">
+                  <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
+                    {user?.role}
+                  </span>
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="card-hover">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg">Date</CardTitle>
+              <Calendar className="h-5 w-5 text-primary" />
+            </div>
+            <CardDescription>Current date information</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-4">
+              <div className="text-3xl font-bold">{currentDate}</div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="card-hover">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg">Time</CardTitle>
+              <Clock className="h-5 w-5 text-primary" />
+            </div>
+            <CardDescription>Current time information</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-4">
+              <div className="text-3xl font-bold">{currentTime}</div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card className="mt-6 card-hover">
         <CardHeader>
           <CardTitle>Welcome, {user?.username}!</CardTitle>
           <CardDescription>You are logged in as a regular user</CardDescription>
         </CardHeader>
         <CardContent>
           <p>This is a protected page that only authenticated users can access.</p>
-          <p className="mt-4">Your account details:</p>
-          <ul className="list-disc pl-5 mt-2">
-            <li>User ID: {userId}</li>
-            <li>Username: {user?.username}</li>
-            <li>Role: {user?.role}</li>
-          </ul>
+          <p className="mt-4">
+            You can manage your account settings, view your profile, and access user-specific features from this
+            dashboard.
+          </p>
         </CardContent>
         <CardFooter>
           <form action={logout}>

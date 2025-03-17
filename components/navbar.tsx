@@ -4,8 +4,9 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { LogOut } from "lucide-react"
+import { LogOut, Menu, X } from "lucide-react"
 import { logout } from "@/app/actions/auth-actions"
+import { useState } from "react"
 
 interface NavbarProps {
   isLoggedIn: boolean
@@ -14,26 +15,30 @@ interface NavbarProps {
 
 export function Navbar({ isLoggedIn, isAdmin }: NavbarProps) {
   const pathname = usePathname()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
+  const closeMenu = () => setIsMenuOpen(false)
 
   return (
-    <nav className="bg-background border-b">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+    <nav className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 items-center px-4">
+        <div className="flex items-center justify-between w-full">
           <div className="flex">
-            <div className="flex-shrink-0 flex items-center">
-              <Link href="/" className="text-xl font-bold">
+            <Link href="/" className="flex items-center" onClick={closeMenu}>
+              <span className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
                 Auth App
-              </Link>
-            </div>
-            <div className="ml-6 flex space-x-4">
+              </span>
+            </Link>
+            <div className="hidden md:flex items-center ml-6 space-x-4">
               {isLoggedIn ? (
                 <>
                   <Link
                     href="/user"
-                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                    className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                       pathname === "/user"
-                        ? "border-primary text-foreground"
-                        : "border-transparent text-muted-foreground hover:text-foreground"
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:text-foreground hover:bg-accent"
                     }`}
                   >
                     User Home
@@ -41,10 +46,10 @@ export function Navbar({ isLoggedIn, isAdmin }: NavbarProps) {
                   {isAdmin && (
                     <Link
                       href="/admin"
-                      className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                      className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                         pathname === "/admin"
-                          ? "border-primary text-foreground"
-                          : "border-transparent text-muted-foreground hover:text-foreground"
+                          ? "bg-primary/10 text-primary"
+                          : "text-muted-foreground hover:text-foreground hover:bg-accent"
                       }`}
                     >
                       Admin Dashboard
@@ -55,20 +60,20 @@ export function Navbar({ isLoggedIn, isAdmin }: NavbarProps) {
                 <>
                   <Link
                     href="/login"
-                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                    className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                       pathname === "/login"
-                        ? "border-primary text-foreground"
-                        : "border-transparent text-muted-foreground hover:text-foreground"
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:text-foreground hover:bg-accent"
                     }`}
                   >
                     Login
                   </Link>
                   <Link
                     href="/signup"
-                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                    className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                       pathname === "/signup"
-                        ? "border-primary text-foreground"
-                        : "border-transparent text-muted-foreground hover:text-foreground"
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:text-foreground hover:bg-accent"
                     }`}
                   >
                     Sign Up
@@ -80,16 +85,86 @@ export function Navbar({ isLoggedIn, isAdmin }: NavbarProps) {
           <div className="flex items-center space-x-2">
             <ThemeToggle />
             {isLoggedIn && (
-              <form action={logout}>
-                <Button type="submit" variant="outline" className="flex items-center gap-2">
+              <form action={logout} className="hidden md:block">
+                <Button type="submit" variant="outline" size="sm" className="flex items-center gap-2">
                   <LogOut className="h-4 w-4" />
                   Logout
                 </Button>
               </form>
             )}
+            <Button variant="ghost" size="icon" className="md:hidden" onClick={toggleMenu} aria-label="Toggle menu">
+              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
           </div>
         </div>
       </div>
+
+      {/* Mobile menu */}
+      {isMenuOpen && (
+        <div className="md:hidden border-b">
+          <div className="container py-4 space-y-3">
+            {isLoggedIn ? (
+              <>
+                <Link
+                  href="/user"
+                  className={`block px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                    pathname === "/user"
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                  }`}
+                  onClick={closeMenu}
+                >
+                  User Home
+                </Link>
+                {isAdmin && (
+                  <Link
+                    href="/admin"
+                    className={`block px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                      pathname === "/admin"
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                    }`}
+                    onClick={closeMenu}
+                  >
+                    Admin Dashboard
+                  </Link>
+                )}
+                <form action={logout}>
+                  <Button type="submit" variant="outline" size="sm" className="w-full justify-start">
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </Button>
+                </form>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className={`block px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                    pathname === "/login"
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                  }`}
+                  onClick={closeMenu}
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/signup"
+                  className={`block px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                    pathname === "/signup"
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                  }`}
+                  onClick={closeMenu}
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </nav>
   )
 }
