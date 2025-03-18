@@ -1,9 +1,8 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { getCurrentUser, getUsers, requireAdmin } from "@/lib/auth"
 import { fromObjectId } from "@/lib/db"
-import { logout } from "@/app/actions/auth-actions"
-import { LogOut, Users, BarChart, ShieldCheck } from "lucide-react"
+import { Users, BarChart, ShieldCheck } from "lucide-react"
+import { LogoutButton } from "@/components/logout-button"
 
 export default async function AdminDashboardPage() {
   // Server-side protection
@@ -105,12 +104,7 @@ export default async function AdminDashboardPage() {
           <p className="mt-4">As an administrator, you have access to user management and system settings.</p>
         </CardContent>
         <CardFooter>
-          <form action={logout}>
-            <Button type="submit" variant="outline" className="flex items-center gap-2">
-              <LogOut className="h-4 w-4" />
-              Logout
-            </Button>
-          </form>
+          <LogoutButton />
         </CardFooter>
       </Card>
 

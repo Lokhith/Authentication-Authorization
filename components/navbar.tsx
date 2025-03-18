@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { LogOut, Menu, X } from "lucide-react"
@@ -15,10 +15,28 @@ interface NavbarProps {
 
 export function Navbar({ isLoggedIn, isAdmin }: NavbarProps) {
   const pathname = usePathname()
+  const router = useRouter()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
   const closeMenu = () => setIsMenuOpen(false)
+
+  async function handleLogout() {
+    setIsLoggingOut(true)
+    try {
+      const result = await logout()
+      if (result?.success && result?.redirectTo) {
+        router.push(result.redirectTo)
+      } else {
+        // Reset loading state if something went wrong
+        setIsLoggingOut(false)
+      }
+    } catch (error) {
+      console.error("Logout error:", error)
+      setIsLoggingOut(false)
+    }
+  }
 
   return (
     <nav className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -85,12 +103,25 @@ export function Navbar({ isLoggedIn, isAdmin }: NavbarProps) {
           <div className="flex items-center space-x-2">
             <ThemeToggle />
             {isLoggedIn && (
-              <form action={logout} className="hidden md:block">
-                <Button type="submit" variant="outline" size="sm" className="flex items-center gap-2">
-                  <LogOut className="h-4 w-4" />
-                  Logout
-                </Button>
-              </form>
+              <Button
+                onClick={handleLogout}
+                variant="outline"
+                size="sm"
+                className="hidden md:flex items-center gap-2"
+                disabled={isLoggingOut}
+              >
+                {isLoggingOut ? (
+                  <>
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                    Logging out...
+                  </>
+                ) : (
+                  <>
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                  </>
+                )}
+              </Button>
             )}
             <Button variant="ghost" size="icon" className="md:hidden" onClick={toggleMenu} aria-label="Toggle menu">
               {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -129,12 +160,25 @@ export function Navbar({ isLoggedIn, isAdmin }: NavbarProps) {
                     Admin Dashboard
                   </Link>
                 )}
-                <form action={logout}>
-                  <Button type="submit" variant="outline" size="sm" className="w-full justify-start">
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Logout
-                  </Button>
-                </form>
+                <Button
+                  onClick={handleLogout}
+                  variant="outline"
+                  size="sm"
+                  className="w-full justify-start"
+                  disabled={isLoggingOut}
+                >
+                  {isLoggingOut ? (
+                    <>
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent mr-2" />
+                      Logging out...
+                    </>
+                  ) : (
+                    <>
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Logout
+                    </>
+                  )}
+                </Button>
               </>
             ) : (
               <>

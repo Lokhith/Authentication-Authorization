@@ -1,9 +1,8 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { getCurrentUser, requireAuth } from "@/lib/auth"
 import { fromObjectId } from "@/lib/db"
-import { logout } from "@/app/actions/auth-actions"
-import { LogOut, User, Calendar, Clock } from "lucide-react"
+import { User, Calendar, Clock } from "lucide-react"
+import { LogoutButton } from "@/components/logout-button"
 
 export default async function UserHomePage() {
   // Server-side protection
@@ -110,12 +109,7 @@ export default async function UserHomePage() {
           </p>
         </CardContent>
         <CardFooter>
-          <form action={logout}>
-            <Button type="submit" variant="outline" className="flex items-center gap-2">
-              <LogOut className="h-4 w-4" />
-              Logout
-            </Button>
-          </form>
+          <LogoutButton />
         </CardFooter>
       </Card>
     </div>
