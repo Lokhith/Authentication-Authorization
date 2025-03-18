@@ -11,7 +11,9 @@ export function LogoutButton() {
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   async function handleLogout() {
+    // Only set loading state when button is clicked
     setIsLoggingOut(true)
+
     try {
       const result = await logout()
       if (result?.success && result?.redirectTo) {
@@ -26,6 +28,7 @@ export function LogoutButton() {
     }
   }
 
+  // Always render the normal button unless isLoggingOut is true
   return (
     <Button onClick={handleLogout} variant="outline" className="flex items-center gap-2" disabled={isLoggingOut}>
       {isLoggingOut ? (

@@ -17,13 +17,16 @@ export function Navbar({ isLoggedIn, isAdmin }: NavbarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  // Explicitly initialize to false
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
   const closeMenu = () => setIsMenuOpen(false)
 
   async function handleLogout() {
+    // Only set loading state when button is clicked
     setIsLoggingOut(true)
+
     try {
       const result = await logout()
       if (result?.success && result?.redirectTo) {
